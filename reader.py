@@ -52,6 +52,7 @@ def main(url, api_key, body_width):
     text.ignore_images = True
     text.ignore_links = True
     markdown = HTML2Text()
+    markdown.body_width = body_width
     response.json['content'] = {
         'html': response.json['content'],
         'markdown': unescape(markdown.handle(response.json['content'])),
