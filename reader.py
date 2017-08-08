@@ -13,7 +13,6 @@ import argparse
 import json
 
 from html import unescape
-from collections import namedtuple
 from html2text import HTML2Text
 from getpass import getpass
 
@@ -21,9 +20,8 @@ MERCURY_API = 'https://mercury.postlight.com/parser'
 
 def handle(response):
     """Convenience method to throw away bad responses"""
-    Response = namedtuple('Response', ['url', 'json'])
     if response.status_code == 200: # success
-        return Response(response.url, response.json())
+        return response.json()
     else:
         message = 'HTTP status {} ({}): {}'.format(
             response.status_code,
@@ -53,12 +51,12 @@ def main(url, api_key, body_width):
     text.ignore_links = True
     markdown = HTML2Text()
     markdown.body_width = body_width
-    response.json['content'] = {
-        'html': response.json['content'],
-        'markdown': unescape(markdown.handle(response.json['content'])),
-        'text': unescape(text.handle(response.json['content']))
+    response['content'] = {
+        'html': response['content'],
+        'markdown': unescape(markdown.handle(response['content'])),
+        'text': unescape(text.handle(response['content']))
     }
-    print(json.dumps(response.json, ensure_ascii=False))
+    print(json.dumps(response, ensure_ascii=False))
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
