@@ -51,134 +51,134 @@ Extract clean(er), readable text from web pages via [Mercury Web Parser API](htt
 ### HTML
 The extracted HTML content from Mercury API is added in `.content.html`:
 
-	$ ./reader.py https://www.wired.com/2016/09/ode-rosetta-spacecraft-going-die-comet/ \
-	> | jq -r '.content.html'
-	<div><article class="content link-underline relative body-copy">
-	
-				<p>Today, the European Space Agency&#x2019;s Rosetta spacecraft will engage its thrusters for one final maneuver: a suicidal plunge toward the comet it has been orbiting for two years and chasing for a decade. After Rosetta collides with comet 67P/Churyumov-Gerasimenko, its systems will go dark. Scientists will never hear from it again. And eventually, as Chury&#x2019;s repeated treks around the Sun slowly evaporate the cosmic snowball&#x2019;s icy surface,&#xA0;Rosetta&#x2019;s body will completely disappear beneath the comet&#x2019;s gathering dust.</p>
-	<p>People are getting real weepy about it.</p>
-	<p>Is that kind of nuts? Sure. Rosetta is an aluminum box. Nobody laments the demise of their toaster. But for something that&#x2019;s not even three meters long (not counting those giant 32-meter solar panels), Rosetta and its even tinier companion, the <a href="https://www.wired.com/2016/09/can-find-philae-lander-hiding-surface-comet/">Philae lander</a>, have had an outsized impact. They had mesospherically high scientifically stakes, a soap operatic journey, and weird, anthropomorphic social media presences. So, as geeky as it is to pour emotion into a scientific instrument &#x2026; we&#x2019;re going to miss Rosetta.</p>
-	<h3>A History of Firsts</h3>
-	<p>Before this mission, no spacecraft had ever rendezvoused with a comet&#x2014;let alone landed on one. There are a million reasons why that&#x2019;s tricky to do, but for simplicity&#x2019;s sake: Have you ever tried to hit a moving object by throwing something&#xA0;at it? Hard, no? And Rosetta had to meet up with Chury at just the right speed&#x2014;slow enough to get caught up in its gravity and avoid faceplanting on the surface.</p>
-	<p>After launching in 2004, Rosetta had to whip around the inner solar system for years, repeatedly slingshotting off of Earth and Mars&#x2019; gravity to get its trajectory right.&#xA0;&#x201C;We had ambitious goals,&#x201D; says&#xA0;Rosetta&#x2019;s former mission manager Gerhard Schwehm, who has been involved with the mission for over 30 years. &#x201C;People said we were crazy.&#x201D; To add to the pressure, Rosetta had to go into hibernation from June 2011 until January 2014 while it waited for Chury to get into the right spot. After sleeping for so long&#x2014;it being so flipping cold hundreds of millions of miles from the Sun&#x2014;Rosetta&#x2019;s team was genuinely concerned it might never switch back on.</p>
-	<p>For many close to Rosetta, the emotional flashpoint was that wakeup, rather than Rosetta&#x2019;s rendezvous with Chury. &#x201C;When the signal was 18 minutes late&#x2014;relative to all the guesses of people who&#x2019;d worked on the mission for ten years&#x2014;it was seriously distressing,&#x201D; says&#xA0;McCaughrean. &#x201C;But then it came, and it was euphoria. You knew finally you had a mission.&#x201D;</p>
-	<p>People outside ESA caught the Rosetta bug as well. There are <a href="https://www.youtube.com/watch?v=nDzmJuXAgD8">songs</a> about it, and hundreds of videos of people who have jobs and other things to do screaming &#x201C;Wake up, Rosetta!&#x201D; to an inanimate object in deep space. Rosetta&#x2019;s fans have stayed with the mission through the wakeup, the successful rendezvous, the Philae&#x2019;s launch and <a href="https://www.wired.com/2014/11/rosetta-philae-comet-landing-success/">disastrously bumpy landing</a>, and its <a href="https://www.wired.com/2015/06/philae-possibly-spotted/">sudden communication</a> and <a href="https://www.wired.com/2016/09/can-find-philae-lander-hiding-surface-comet/">eventual re-discovery</a>. And now, to the bitter end: <a href="https://twitter.com/hashtag/CometLanding?src=hash">#CometLanding</a>.</p>
-	<p>&#x201C;The public&#x2019;s engagement has been quite amazing,&#x201D; Mark McCaughrean, senior science advisor for ESA. &#x201C;There&#x2019;s nobody eating sandwiches on Rosetta, but the mission has very human concerns: water and life.&#x201D; That&#x2019;s at least partially due to the mission&#x2019;s unconventional social media campaign, which cast Rosetta and Philae as chatty, bantering traveling companions.</p>
-	<blockquote class="twitter-tweet">
-	<p>Ready when you are, <a href="https://twitter.com/ESA_Rosetta">@ESA_Rosetta</a>. Give me a little nudge? <a href="https://twitter.com/hashtag/CometLanding?src=hash">#CometLanding</a></p>
-	<p>&#x2014; Philae Lander (@Philae2014) <a href="https://twitter.com/Philae2014/status/532451193537445888">November 12, 2014</a></p></blockquote>
-	
-	<blockquote class="twitter-tweet"><p>
-	.<a href="https://twitter.com/Philae2014">@Philae2014</a> &#x1F642; My back is chilly now you&#x2019;ve left, but I&#x2019;m in a better position to watch you now. Send me a postcard! <a href="https://twitter.com/hashtag/CometLanding?src=hash">#CometLanding</a></p>
-	<p>&#x2014; ESA Rosetta Mission (@ESA_Rosetta) <a href="https://twitter.com/ESA_Rosetta/status/532496644231942144">November 12, 2014</a>
-	</p></blockquote>
-	
-	<p>But for&#xA0;McCaughrean, it was important that the anthropomorphizing didn&#x2019;t drown out the science&#x2014;it was for drawing people in, and keeping them invested. &#x201C;I think we&#x2019;ve redressed the balance about people&#x2019;s short attention span and need for instant gratification,&#x201D; he says. &#x201C;And that&#x2019;s important. You can&#x2019;t just go to Mars today because <a href="https://www.wired.com/2016/09/elon-musk-colonize-mars/">Elon says you can go</a>. You&#x2019;ve got to be in it for the long haul.&#x201D;</p>
-	<h3>A Future of Firsts</h3>
-	<p>Rosetta&#x2019;s long haul is ending, but it has proved the value of extended space exploration at every point of its journey. &#x201C;Learning how to fly around the comet was a masterpiece of spaceflight,&#x201D; says Andrea Accomazzo,&#xA0;head of ESA&#x2019;s solar and planetary missions division, and flight director for Rosetta. When Rosetta arrived at Chury, Accomazzo&#x2019;s team was flying blind. They had to infer the mass of the comet&#x2014;and the velocity Rosetta needed to maintain to stay in orbit&#x2014;by measuring how much the comet was perturbing Rosetta&#x2019;s trajectory. Rosetta&#x2019;s team at ESA shared everything they learned with their collaborators at NASA&#x2019;s Jet Propulsion Laboratory, who had taught them interplanetary flight in previous years. It&#x2019;s all pretty kumbaya.</p>
-	<p>Which seems about right, given that Rosetta&#x2019;s mission is uncovering clues to humanity&#x2019;s history. Rosetta and Philae collected molecular oxygen that had been trapped in the ice for billions of years, which suggests that the comet must have formed someplace cold and distant, far from active stirring by larger bodies. And as for life&#x2019;s origins, they found carbon and hydrogen and nitrogen as well&#x2014;and even the simplest amino acid, glycine. &#x201C;There&#x2019;s just a whole primordial soup of stuff,&#x201D; says McCaughrean.</p>
-	<p>But while the mission has been long, it is far from complete. Rosetta has been collecting data for two years, and scientists have analyzed only a fraction of it. And they&#x2019;ll get more even as&#xA0;Accomazzo&#x2019;s team pilots the craft to its final resting place. &#x201C;The mission for me is all the science data that was collected,&#x201D; says Accomazzo, &#x201C;and it&#x2019;s a good feeling that&#xA0;scientists will use them for ages.&#x201D;</p>
-	<p>But for now, pulling the plug on Rosetta is a difficult job. &#x201C;There will be a piece of our lives that is gone,&#x201D; says Accomazzo. &#x201C;After the landing we do have a party&#x2014;otherwise it would be too depressing.&#x201D; And Accomazzo is far from alone in being emotional.</p>
-	<p>Even with the distance of retirement,&#xA0;Schwehm compared the end of Rosetta&#x2019;s transmissions to a flatlining heart monitor. &#x201C;We&#x2019;ll never have that closure with Rosetta like we did with Philae because there&#x2019;s nothing out there to take a picture,&#x201D; says McCaughrean. &#x201C;I think we&#x2019;ll see a lot of people go off into the corner for a cry when it&#x2019;s over.&#x201D;</p>
-	
-				
-	
-						</article></div>
+    $ ./reader.py https://www.wired.com/2016/09/ode-rosetta-spacecraft-going-die-comet/ \
+    > | jq -r '.content.html'
+    <div><article class="content link-underline relative body-copy">
+    
+                <p>Today, the European Space Agency&#x2019;s Rosetta spacecraft will engage its thrusters for one final maneuver: a suicidal plunge toward the comet it has been orbiting for two years and chasing for a decade. After Rosetta collides with comet 67P/Churyumov-Gerasimenko, its systems will go dark. Scientists will never hear from it again. And eventually, as Chury&#x2019;s repeated treks around the Sun slowly evaporate the cosmic snowball&#x2019;s icy surface,&#xA0;Rosetta&#x2019;s body will completely disappear beneath the comet&#x2019;s gathering dust.</p>
+    <p>People are getting real weepy about it.</p>
+    <p>Is that kind of nuts? Sure. Rosetta is an aluminum box. Nobody laments the demise of their toaster. But for something that&#x2019;s not even three meters long (not counting those giant 32-meter solar panels), Rosetta and its even tinier companion, the <a href="https://www.wired.com/2016/09/can-find-philae-lander-hiding-surface-comet/">Philae lander</a>, have had an outsized impact. They had mesospherically high scientifically stakes, a soap operatic journey, and weird, anthropomorphic social media presences. So, as geeky as it is to pour emotion into a scientific instrument &#x2026; we&#x2019;re going to miss Rosetta.</p>
+    <h3>A History of Firsts</h3>
+    <p>Before this mission, no spacecraft had ever rendezvoused with a comet&#x2014;let alone landed on one. There are a million reasons why that&#x2019;s tricky to do, but for simplicity&#x2019;s sake: Have you ever tried to hit a moving object by throwing something&#xA0;at it? Hard, no? And Rosetta had to meet up with Chury at just the right speed&#x2014;slow enough to get caught up in its gravity and avoid faceplanting on the surface.</p>
+    <p>After launching in 2004, Rosetta had to whip around the inner solar system for years, repeatedly slingshotting off of Earth and Mars&#x2019; gravity to get its trajectory right.&#xA0;&#x201C;We had ambitious goals,&#x201D; says&#xA0;Rosetta&#x2019;s former mission manager Gerhard Schwehm, who has been involved with the mission for over 30 years. &#x201C;People said we were crazy.&#x201D; To add to the pressure, Rosetta had to go into hibernation from June 2011 until January 2014 while it waited for Chury to get into the right spot. After sleeping for so long&#x2014;it being so flipping cold hundreds of millions of miles from the Sun&#x2014;Rosetta&#x2019;s team was genuinely concerned it might never switch back on.</p>
+    <p>For many close to Rosetta, the emotional flashpoint was that wakeup, rather than Rosetta&#x2019;s rendezvous with Chury. &#x201C;When the signal was 18 minutes late&#x2014;relative to all the guesses of people who&#x2019;d worked on the mission for ten years&#x2014;it was seriously distressing,&#x201D; says&#xA0;McCaughrean. &#x201C;But then it came, and it was euphoria. You knew finally you had a mission.&#x201D;</p>
+    <p>People outside ESA caught the Rosetta bug as well. There are <a href="https://www.youtube.com/watch?v=nDzmJuXAgD8">songs</a> about it, and hundreds of videos of people who have jobs and other things to do screaming &#x201C;Wake up, Rosetta!&#x201D; to an inanimate object in deep space. Rosetta&#x2019;s fans have stayed with the mission through the wakeup, the successful rendezvous, the Philae&#x2019;s launch and <a href="https://www.wired.com/2014/11/rosetta-philae-comet-landing-success/">disastrously bumpy landing</a>, and its <a href="https://www.wired.com/2015/06/philae-possibly-spotted/">sudden communication</a> and <a href="https://www.wired.com/2016/09/can-find-philae-lander-hiding-surface-comet/">eventual re-discovery</a>. And now, to the bitter end: <a href="https://twitter.com/hashtag/CometLanding?src=hash">#CometLanding</a>.</p>
+    <p>&#x201C;The public&#x2019;s engagement has been quite amazing,&#x201D; Mark McCaughrean, senior science advisor for ESA. &#x201C;There&#x2019;s nobody eating sandwiches on Rosetta, but the mission has very human concerns: water and life.&#x201D; That&#x2019;s at least partially due to the mission&#x2019;s unconventional social media campaign, which cast Rosetta and Philae as chatty, bantering traveling companions.</p>
+    <blockquote class="twitter-tweet">
+    <p>Ready when you are, <a href="https://twitter.com/ESA_Rosetta">@ESA_Rosetta</a>. Give me a little nudge? <a href="https://twitter.com/hashtag/CometLanding?src=hash">#CometLanding</a></p>
+    <p>&#x2014; Philae Lander (@Philae2014) <a href="https://twitter.com/Philae2014/status/532451193537445888">November 12, 2014</a></p></blockquote>
+    
+    <blockquote class="twitter-tweet"><p>
+    .<a href="https://twitter.com/Philae2014">@Philae2014</a> &#x1F642; My back is chilly now you&#x2019;ve left, but I&#x2019;m in a better position to watch you now. Send me a postcard! <a href="https://twitter.com/hashtag/CometLanding?src=hash">#CometLanding</a></p>
+    <p>&#x2014; ESA Rosetta Mission (@ESA_Rosetta) <a href="https://twitter.com/ESA_Rosetta/status/532496644231942144">November 12, 2014</a>
+    </p></blockquote>
+    
+    <p>But for&#xA0;McCaughrean, it was important that the anthropomorphizing didn&#x2019;t drown out the science&#x2014;it was for drawing people in, and keeping them invested. &#x201C;I think we&#x2019;ve redressed the balance about people&#x2019;s short attention span and need for instant gratification,&#x201D; he says. &#x201C;And that&#x2019;s important. You can&#x2019;t just go to Mars today because <a href="https://www.wired.com/2016/09/elon-musk-colonize-mars/">Elon says you can go</a>. You&#x2019;ve got to be in it for the long haul.&#x201D;</p>
+    <h3>A Future of Firsts</h3>
+    <p>Rosetta&#x2019;s long haul is ending, but it has proved the value of extended space exploration at every point of its journey. &#x201C;Learning how to fly around the comet was a masterpiece of spaceflight,&#x201D; says Andrea Accomazzo,&#xA0;head of ESA&#x2019;s solar and planetary missions division, and flight director for Rosetta. When Rosetta arrived at Chury, Accomazzo&#x2019;s team was flying blind. They had to infer the mass of the comet&#x2014;and the velocity Rosetta needed to maintain to stay in orbit&#x2014;by measuring how much the comet was perturbing Rosetta&#x2019;s trajectory. Rosetta&#x2019;s team at ESA shared everything they learned with their collaborators at NASA&#x2019;s Jet Propulsion Laboratory, who had taught them interplanetary flight in previous years. It&#x2019;s all pretty kumbaya.</p>
+    <p>Which seems about right, given that Rosetta&#x2019;s mission is uncovering clues to humanity&#x2019;s history. Rosetta and Philae collected molecular oxygen that had been trapped in the ice for billions of years, which suggests that the comet must have formed someplace cold and distant, far from active stirring by larger bodies. And as for life&#x2019;s origins, they found carbon and hydrogen and nitrogen as well&#x2014;and even the simplest amino acid, glycine. &#x201C;There&#x2019;s just a whole primordial soup of stuff,&#x201D; says McCaughrean.</p>
+    <p>But while the mission has been long, it is far from complete. Rosetta has been collecting data for two years, and scientists have analyzed only a fraction of it. And they&#x2019;ll get more even as&#xA0;Accomazzo&#x2019;s team pilots the craft to its final resting place. &#x201C;The mission for me is all the science data that was collected,&#x201D; says Accomazzo, &#x201C;and it&#x2019;s a good feeling that&#xA0;scientists will use them for ages.&#x201D;</p>
+    <p>But for now, pulling the plug on Rosetta is a difficult job. &#x201C;There will be a piece of our lives that is gone,&#x201D; says Accomazzo. &#x201C;After the landing we do have a party&#x2014;otherwise it would be too depressing.&#x201D; And Accomazzo is far from alone in being emotional.</p>
+    <p>Even with the distance of retirement,&#xA0;Schwehm compared the end of Rosetta&#x2019;s transmissions to a flatlining heart monitor. &#x201C;We&#x2019;ll never have that closure with Rosetta like we did with Philae because there&#x2019;s nothing out there to take a picture,&#x201D; says McCaughrean. &#x201C;I think we&#x2019;ll see a lot of people go off into the corner for a cry when it&#x2019;s over.&#x201D;</p>
+    
+                
+    
+                        </article></div>
 
 ### Markdown
 A Markdown conversion from the HTML is added in `.content.markdown`:
 
-	$ ./reader.py https://www.wired.com/2016/09/ode-rosetta-spacecraft-going-die-comet/ \
-	> | jq -r '.content.markdown'
-	Today, the European Space Agency's Rosetta spacecraft will engage its thrusters for one final maneuver: a suicidal plunge toward the comet it has been orbiting for two years and chasing for a decade. After Rosetta collides with comet 67P/Churyumov-Gerasimenko, its systems will go dark. Scientists will never hear from it again. And eventually, as Chury's repeated treks around the Sun slowly evaporate the cosmic snowball's icy surface, Rosetta's body will completely disappear beneath the comet's gathering dust.
-	
-	People are getting real weepy about it.
-	
-	Is that kind of nuts? Sure. Rosetta is an aluminum box. Nobody laments the demise of their toaster. But for something that's not even three meters long (not counting those giant 32-meter solar panels), Rosetta and its even tinier companion, the [Philae lander](https://www.wired.com/2016/09/can-find-philae-lander-hiding-surface-comet/), have had an outsized impact. They had mesospherically high scientifically stakes, a soap operatic journey, and weird, anthropomorphic social media presences. So, as geeky as it is to pour emotion into a scientific instrument … we're going to miss Rosetta.
-	
-	### A History of Firsts
-	
-	Before this mission, no spacecraft had ever rendezvoused with a comet--let alone landed on one. There are a million reasons why that's tricky to do, but for simplicity's sake: Have you ever tried to hit a moving object by throwing something at it? Hard, no? And Rosetta had to meet up with Chury at just the right speed--slow enough to get caught up in its gravity and avoid faceplanting on the surface.
-	
-	After launching in 2004, Rosetta had to whip around the inner solar system for years, repeatedly slingshotting off of Earth and Mars' gravity to get its trajectory right. "We had ambitious goals," says Rosetta's former mission manager Gerhard Schwehm, who has been involved with the mission for over 30 years. "People said we were crazy." To add to the pressure, Rosetta had to go into hibernation from June 2011 until January 2014 while it waited for Chury to get into the right spot. After sleeping for so long--it being so flipping cold hundreds of millions of miles from the Sun--Rosetta's team was genuinely concerned it might never switch back on.
-	
-	For many close to Rosetta, the emotional flashpoint was that wakeup, rather than Rosetta's rendezvous with Chury. "When the signal was 18 minutes late--relative to all the guesses of people who'd worked on the mission for ten years--it was seriously distressing," says McCaughrean. "But then it came, and it was euphoria. You knew finally you had a mission."
-	
-	People outside ESA caught the Rosetta bug as well. There are [songs](https://www.youtube.com/watch?v=nDzmJuXAgD8) about it, and hundreds of videos of people who have jobs and other things to do screaming "Wake up, Rosetta!" to an inanimate object in deep space. Rosetta's fans have stayed with the mission through the wakeup, the successful rendezvous, the Philae's launch and [disastrously bumpy landing](https://www.wired.com/2014/11/rosetta-philae-comet-landing-success/), and its [sudden communication](https://www.wired.com/2015/06/philae-possibly-spotted/) and [eventual re-discovery](https://www.wired.com/2016/09/can-find-philae-lander-hiding-surface-comet/). And now, to the bitter end: [#CometLanding](https://twitter.com/hashtag/CometLanding?src=hash).
-	
-	"The public's engagement has been quite amazing," Mark McCaughrean, senior science advisor for ESA. "There's nobody eating sandwiches on Rosetta, but the mission has very human concerns: water and life." That's at least partially due to the mission's unconventional social media campaign, which cast Rosetta and Philae as chatty, bantering traveling companions.
-	
-	> Ready when you are, [@ESA_Rosetta](https://twitter.com/ESA_Rosetta). Give me a little nudge? [#CometLanding](https://twitter.com/hashtag/CometLanding?src=hash)
-	> 
-	> -- Philae Lander (@Philae2014) [November 12, 2014](https://twitter.com/Philae2014/status/532451193537445888)
-	
-	> .[@Philae2014](https://twitter.com/Philae2014) 🙂 My back is chilly now you've left, but I'm in a better position to watch you now. Send me a postcard! [#CometLanding](https://twitter.com/hashtag/CometLanding?src=hash)
-	> 
-	> -- ESA Rosetta Mission (@ESA_Rosetta) [November 12, 2014](https://twitter.com/ESA_Rosetta/status/532496644231942144)
-	
-	But for McCaughrean, it was important that the anthropomorphizing didn't drown out the science--it was for drawing people in, and keeping them invested. "I think we've redressed the balance about people's short attention span and need for instant gratification," he says. "And that's important. You can't just go to Mars today because [Elon says you can go](https://www.wired.com/2016/09/elon-musk-colonize-mars/). You've got to be in it for the long haul."
-	
-	### A Future of Firsts
-	
-	Rosetta's long haul is ending, but it has proved the value of extended space exploration at every point of its journey. "Learning how to fly around the comet was a masterpiece of spaceflight," says Andrea Accomazzo, head of ESA's solar and planetary missions division, and flight director for Rosetta. When Rosetta arrived at Chury, Accomazzo's team was flying blind. They had to infer the mass of the comet--and the velocity Rosetta needed to maintain to stay in orbit--by measuring how much the comet was perturbing Rosetta's trajectory. Rosetta's team at ESA shared everything they learned with their collaborators at NASA's Jet Propulsion Laboratory, who had taught them interplanetary flight in previous years. It's all pretty kumbaya.
-	
-	Which seems about right, given that Rosetta's mission is uncovering clues to humanity's history. Rosetta and Philae collected molecular oxygen that had been trapped in the ice for billions of years, which suggests that the comet must have formed someplace cold and distant, far from active stirring by larger bodies. And as for life's origins, they found carbon and hydrogen and nitrogen as well--and even the simplest amino acid, glycine. "There's just a whole primordial soup of stuff," says McCaughrean.
-	
-	But while the mission has been long, it is far from complete. Rosetta has been collecting data for two years, and scientists have analyzed only a fraction of it. And they'll get more even as Accomazzo's team pilots the craft to its final resting place. "The mission for me is all the science data that was collected," says Accomazzo, "and it's a good feeling that scientists will use them for ages."
-	
-	But for now, pulling the plug on Rosetta is a difficult job. "There will be a piece of our lives that is gone," says Accomazzo. "After the landing we do have a party--otherwise it would be too depressing." And Accomazzo is far from alone in being emotional.
-	
-	Even with the distance of retirement, Schwehm compared the end of Rosetta's transmissions to a flatlining heart monitor. "We'll never have that closure with Rosetta like we did with Philae because there's nothing out there to take a picture," says McCaughrean. "I think we'll see a lot of people go off into the corner for a cry when it's over."
+    $ ./reader.py https://www.wired.com/2016/09/ode-rosetta-spacecraft-going-die-comet/ \
+    > | jq -r '.content.markdown'
+    Today, the European Space Agency's Rosetta spacecraft will engage its thrusters for one final maneuver: a suicidal plunge toward the comet it has been orbiting for two years and chasing for a decade. After Rosetta collides with comet 67P/Churyumov-Gerasimenko, its systems will go dark. Scientists will never hear from it again. And eventually, as Chury's repeated treks around the Sun slowly evaporate the cosmic snowball's icy surface, Rosetta's body will completely disappear beneath the comet's gathering dust.
+    
+    People are getting real weepy about it.
+    
+    Is that kind of nuts? Sure. Rosetta is an aluminum box. Nobody laments the demise of their toaster. But for something that's not even three meters long (not counting those giant 32-meter solar panels), Rosetta and its even tinier companion, the [Philae lander](https://www.wired.com/2016/09/can-find-philae-lander-hiding-surface-comet/), have had an outsized impact. They had mesospherically high scientifically stakes, a soap operatic journey, and weird, anthropomorphic social media presences. So, as geeky as it is to pour emotion into a scientific instrument … we're going to miss Rosetta.
+    
+    ### A History of Firsts
+    
+    Before this mission, no spacecraft had ever rendezvoused with a comet--let alone landed on one. There are a million reasons why that's tricky to do, but for simplicity's sake: Have you ever tried to hit a moving object by throwing something at it? Hard, no? And Rosetta had to meet up with Chury at just the right speed--slow enough to get caught up in its gravity and avoid faceplanting on the surface.
+    
+    After launching in 2004, Rosetta had to whip around the inner solar system for years, repeatedly slingshotting off of Earth and Mars' gravity to get its trajectory right. "We had ambitious goals," says Rosetta's former mission manager Gerhard Schwehm, who has been involved with the mission for over 30 years. "People said we were crazy." To add to the pressure, Rosetta had to go into hibernation from June 2011 until January 2014 while it waited for Chury to get into the right spot. After sleeping for so long--it being so flipping cold hundreds of millions of miles from the Sun--Rosetta's team was genuinely concerned it might never switch back on.
+    
+    For many close to Rosetta, the emotional flashpoint was that wakeup, rather than Rosetta's rendezvous with Chury. "When the signal was 18 minutes late--relative to all the guesses of people who'd worked on the mission for ten years--it was seriously distressing," says McCaughrean. "But then it came, and it was euphoria. You knew finally you had a mission."
+    
+    People outside ESA caught the Rosetta bug as well. There are [songs](https://www.youtube.com/watch?v=nDzmJuXAgD8) about it, and hundreds of videos of people who have jobs and other things to do screaming "Wake up, Rosetta!" to an inanimate object in deep space. Rosetta's fans have stayed with the mission through the wakeup, the successful rendezvous, the Philae's launch and [disastrously bumpy landing](https://www.wired.com/2014/11/rosetta-philae-comet-landing-success/), and its [sudden communication](https://www.wired.com/2015/06/philae-possibly-spotted/) and [eventual re-discovery](https://www.wired.com/2016/09/can-find-philae-lander-hiding-surface-comet/). And now, to the bitter end: [#CometLanding](https://twitter.com/hashtag/CometLanding?src=hash).
+    
+    "The public's engagement has been quite amazing," Mark McCaughrean, senior science advisor for ESA. "There's nobody eating sandwiches on Rosetta, but the mission has very human concerns: water and life." That's at least partially due to the mission's unconventional social media campaign, which cast Rosetta and Philae as chatty, bantering traveling companions.
+    
+    > Ready when you are, [@ESA_Rosetta](https://twitter.com/ESA_Rosetta). Give me a little nudge? [#CometLanding](https://twitter.com/hashtag/CometLanding?src=hash)
+    > 
+    > -- Philae Lander (@Philae2014) [November 12, 2014](https://twitter.com/Philae2014/status/532451193537445888)
+    
+    > .[@Philae2014](https://twitter.com/Philae2014) 🙂 My back is chilly now you've left, but I'm in a better position to watch you now. Send me a postcard! [#CometLanding](https://twitter.com/hashtag/CometLanding?src=hash)
+    > 
+    > -- ESA Rosetta Mission (@ESA_Rosetta) [November 12, 2014](https://twitter.com/ESA_Rosetta/status/532496644231942144)
+    
+    But for McCaughrean, it was important that the anthropomorphizing didn't drown out the science--it was for drawing people in, and keeping them invested. "I think we've redressed the balance about people's short attention span and need for instant gratification," he says. "And that's important. You can't just go to Mars today because [Elon says you can go](https://www.wired.com/2016/09/elon-musk-colonize-mars/). You've got to be in it for the long haul."
+    
+    ### A Future of Firsts
+    
+    Rosetta's long haul is ending, but it has proved the value of extended space exploration at every point of its journey. "Learning how to fly around the comet was a masterpiece of spaceflight," says Andrea Accomazzo, head of ESA's solar and planetary missions division, and flight director for Rosetta. When Rosetta arrived at Chury, Accomazzo's team was flying blind. They had to infer the mass of the comet--and the velocity Rosetta needed to maintain to stay in orbit--by measuring how much the comet was perturbing Rosetta's trajectory. Rosetta's team at ESA shared everything they learned with their collaborators at NASA's Jet Propulsion Laboratory, who had taught them interplanetary flight in previous years. It's all pretty kumbaya.
+    
+    Which seems about right, given that Rosetta's mission is uncovering clues to humanity's history. Rosetta and Philae collected molecular oxygen that had been trapped in the ice for billions of years, which suggests that the comet must have formed someplace cold and distant, far from active stirring by larger bodies. And as for life's origins, they found carbon and hydrogen and nitrogen as well--and even the simplest amino acid, glycine. "There's just a whole primordial soup of stuff," says McCaughrean.
+    
+    But while the mission has been long, it is far from complete. Rosetta has been collecting data for two years, and scientists have analyzed only a fraction of it. And they'll get more even as Accomazzo's team pilots the craft to its final resting place. "The mission for me is all the science data that was collected," says Accomazzo, "and it's a good feeling that scientists will use them for ages."
+    
+    But for now, pulling the plug on Rosetta is a difficult job. "There will be a piece of our lives that is gone," says Accomazzo. "After the landing we do have a party--otherwise it would be too depressing." And Accomazzo is far from alone in being emotional.
+    
+    Even with the distance of retirement, Schwehm compared the end of Rosetta's transmissions to a flatlining heart monitor. "We'll never have that closure with Rosetta like we did with Philae because there's nothing out there to take a picture," says McCaughrean. "I think we'll see a lot of people go off into the corner for a cry when it's over."
 
 ### Plain-text
 A plain-text conversion from the HTML is added in `.content.text`:
 
-	$ ./reader.py https://www.wired.com/2016/09/ode-rosetta-spacecraft-going-die-comet/ \
-	> | jq -r '.content.text'
-	Today, the European Space Agency's Rosetta spacecraft will engage its thrusters for one final maneuver: a suicidal plunge toward the comet it has been orbiting for two years and chasing for a decade. After Rosetta collides with comet 67P/Churyumov-Gerasimenko, its systems will go dark. Scientists will never hear from it again. And eventually, as Chury's repeated treks around the Sun slowly evaporate the cosmic snowball's icy surface, Rosetta's body will completely disappear beneath the comet's gathering dust.
-	
-	People are getting real weepy about it.
-	
-	Is that kind of nuts? Sure. Rosetta is an aluminum box. Nobody laments the demise of their toaster. But for something that's not even three meters long (not counting those giant 32-meter solar panels), Rosetta and its even tinier companion, the Philae lander, have had an outsized impact. They had mesospherically high scientifically stakes, a soap operatic journey, and weird, anthropomorphic social media presences. So, as geeky as it is to pour emotion into a scientific instrument … we're going to miss Rosetta.
-	
-	### A History of Firsts
-	
-	Before this mission, no spacecraft had ever rendezvoused with a comet--let alone landed on one. There are a million reasons why that's tricky to do, but for simplicity's sake: Have you ever tried to hit a moving object by throwing something at it? Hard, no? And Rosetta had to meet up with Chury at just the right speed--slow enough to get caught up in its gravity and avoid faceplanting on the surface.
-	
-	After launching in 2004, Rosetta had to whip around the inner solar system for years, repeatedly slingshotting off of Earth and Mars' gravity to get its trajectory right. "We had ambitious goals," says Rosetta's former mission manager Gerhard Schwehm, who has been involved with the mission for over 30 years. "People said we were crazy." To add to the pressure, Rosetta had to go into hibernation from June 2011 until January 2014 while it waited for Chury to get into the right spot. After sleeping for so long--it being so flipping cold hundreds of millions of miles from the Sun--Rosetta's team was genuinely concerned it might never switch back on.
-	
-	For many close to Rosetta, the emotional flashpoint was that wakeup, rather than Rosetta's rendezvous with Chury. "When the signal was 18 minutes late--relative to all the guesses of people who'd worked on the mission for ten years--it was seriously distressing," says McCaughrean. "But then it came, and it was euphoria. You knew finally you had a mission."
-	
-	People outside ESA caught the Rosetta bug as well. There are songs about it, and hundreds of videos of people who have jobs and other things to do screaming "Wake up, Rosetta!" to an inanimate object in deep space. Rosetta's fans have stayed with the mission through the wakeup, the successful rendezvous, the Philae's launch and disastrously bumpy landing, and its sudden communication and eventual re-discovery. And now, to the bitter end: #CometLanding.
-	
-	"The public's engagement has been quite amazing," Mark McCaughrean, senior science advisor for ESA. "There's nobody eating sandwiches on Rosetta, but the mission has very human concerns: water and life." That's at least partially due to the mission's unconventional social media campaign, which cast Rosetta and Philae as chatty, bantering traveling companions.
-	
-	> Ready when you are, @ESA_Rosetta. Give me a little nudge? #CometLanding
-	> 
-	> -- Philae Lander (@Philae2014) November 12, 2014
-	
-	> .@Philae2014 🙂 My back is chilly now you've left, but I'm in a better position to watch you now. Send me a postcard! #CometLanding
-	> 
-	> -- ESA Rosetta Mission (@ESA_Rosetta) November 12, 2014
-	
-	But for McCaughrean, it was important that the anthropomorphizing didn't drown out the science--it was for drawing people in, and keeping them invested. "I think we've redressed the balance about people's short attention span and need for instant gratification," he says. "And that's important. You can't just go to Mars today because Elon says you can go. You've got to be in it for the long haul."
-	
-	### A Future of Firsts
-	
-	Rosetta's long haul is ending, but it has proved the value of extended space exploration at every point of its journey. "Learning how to fly around the comet was a masterpiece of spaceflight," says Andrea Accomazzo, head of ESA's solar and planetary missions division, and flight director for Rosetta. When Rosetta arrived at Chury, Accomazzo's team was flying blind. They had to infer the mass of the comet--and the velocity Rosetta needed to maintain to stay in orbit--by measuring how much the comet was perturbing Rosetta's trajectory. Rosetta's team at ESA shared everything they learned with their collaborators at NASA's Jet Propulsion Laboratory, who had taught them interplanetary flight in previous years. It's all pretty kumbaya.
-	
-	Which seems about right, given that Rosetta's mission is uncovering clues to humanity's history. Rosetta and Philae collected molecular oxygen that had been trapped in the ice for billions of years, which suggests that the comet must have formed someplace cold and distant, far from active stirring by larger bodies. And as for life's origins, they found carbon and hydrogen and nitrogen as well--and even the simplest amino acid, glycine. "There's just a whole primordial soup of stuff," says McCaughrean.
-	
-	But while the mission has been long, it is far from complete. Rosetta has been collecting data for two years, and scientists have analyzed only a fraction of it. And they'll get more even as Accomazzo's team pilots the craft to its final resting place. "The mission for me is all the science data that was collected," says Accomazzo, "and it's a good feeling that scientists will use them for ages."
-	
-	But for now, pulling the plug on Rosetta is a difficult job. "There will be a piece of our lives that is gone," says Accomazzo. "After the landing we do have a party--otherwise it would be too depressing." And Accomazzo is far from alone in being emotional.
-	
-	Even with the distance of retirement, Schwehm compared the end of Rosetta's transmissions to a flatlining heart monitor. "We'll never have that closure with Rosetta like we did with Philae because there's nothing out there to take a picture," says McCaughrean. "I think we'll see a lot of people go off into the corner for a cry when it's over."
+    $ ./reader.py https://www.wired.com/2016/09/ode-rosetta-spacecraft-going-die-comet/ \
+    > | jq -r '.content.text'
+    Today, the European Space Agency's Rosetta spacecraft will engage its thrusters for one final maneuver: a suicidal plunge toward the comet it has been orbiting for two years and chasing for a decade. After Rosetta collides with comet 67P/Churyumov-Gerasimenko, its systems will go dark. Scientists will never hear from it again. And eventually, as Chury's repeated treks around the Sun slowly evaporate the cosmic snowball's icy surface, Rosetta's body will completely disappear beneath the comet's gathering dust.
+    
+    People are getting real weepy about it.
+    
+    Is that kind of nuts? Sure. Rosetta is an aluminum box. Nobody laments the demise of their toaster. But for something that's not even three meters long (not counting those giant 32-meter solar panels), Rosetta and its even tinier companion, the Philae lander, have had an outsized impact. They had mesospherically high scientifically stakes, a soap operatic journey, and weird, anthropomorphic social media presences. So, as geeky as it is to pour emotion into a scientific instrument … we're going to miss Rosetta.
+    
+    ### A History of Firsts
+    
+    Before this mission, no spacecraft had ever rendezvoused with a comet--let alone landed on one. There are a million reasons why that's tricky to do, but for simplicity's sake: Have you ever tried to hit a moving object by throwing something at it? Hard, no? And Rosetta had to meet up with Chury at just the right speed--slow enough to get caught up in its gravity and avoid faceplanting on the surface.
+    
+    After launching in 2004, Rosetta had to whip around the inner solar system for years, repeatedly slingshotting off of Earth and Mars' gravity to get its trajectory right. "We had ambitious goals," says Rosetta's former mission manager Gerhard Schwehm, who has been involved with the mission for over 30 years. "People said we were crazy." To add to the pressure, Rosetta had to go into hibernation from June 2011 until January 2014 while it waited for Chury to get into the right spot. After sleeping for so long--it being so flipping cold hundreds of millions of miles from the Sun--Rosetta's team was genuinely concerned it might never switch back on.
+    
+    For many close to Rosetta, the emotional flashpoint was that wakeup, rather than Rosetta's rendezvous with Chury. "When the signal was 18 minutes late--relative to all the guesses of people who'd worked on the mission for ten years--it was seriously distressing," says McCaughrean. "But then it came, and it was euphoria. You knew finally you had a mission."
+    
+    People outside ESA caught the Rosetta bug as well. There are songs about it, and hundreds of videos of people who have jobs and other things to do screaming "Wake up, Rosetta!" to an inanimate object in deep space. Rosetta's fans have stayed with the mission through the wakeup, the successful rendezvous, the Philae's launch and disastrously bumpy landing, and its sudden communication and eventual re-discovery. And now, to the bitter end: #CometLanding.
+    
+    "The public's engagement has been quite amazing," Mark McCaughrean, senior science advisor for ESA. "There's nobody eating sandwiches on Rosetta, but the mission has very human concerns: water and life." That's at least partially due to the mission's unconventional social media campaign, which cast Rosetta and Philae as chatty, bantering traveling companions.
+    
+    > Ready when you are, @ESA_Rosetta. Give me a little nudge? #CometLanding
+    > 
+    > -- Philae Lander (@Philae2014) November 12, 2014
+    
+    > .@Philae2014 🙂 My back is chilly now you've left, but I'm in a better position to watch you now. Send me a postcard! #CometLanding
+    > 
+    > -- ESA Rosetta Mission (@ESA_Rosetta) November 12, 2014
+    
+    But for McCaughrean, it was important that the anthropomorphizing didn't drown out the science--it was for drawing people in, and keeping them invested. "I think we've redressed the balance about people's short attention span and need for instant gratification," he says. "And that's important. You can't just go to Mars today because Elon says you can go. You've got to be in it for the long haul."
+    
+    ### A Future of Firsts
+    
+    Rosetta's long haul is ending, but it has proved the value of extended space exploration at every point of its journey. "Learning how to fly around the comet was a masterpiece of spaceflight," says Andrea Accomazzo, head of ESA's solar and planetary missions division, and flight director for Rosetta. When Rosetta arrived at Chury, Accomazzo's team was flying blind. They had to infer the mass of the comet--and the velocity Rosetta needed to maintain to stay in orbit--by measuring how much the comet was perturbing Rosetta's trajectory. Rosetta's team at ESA shared everything they learned with their collaborators at NASA's Jet Propulsion Laboratory, who had taught them interplanetary flight in previous years. It's all pretty kumbaya.
+    
+    Which seems about right, given that Rosetta's mission is uncovering clues to humanity's history. Rosetta and Philae collected molecular oxygen that had been trapped in the ice for billions of years, which suggests that the comet must have formed someplace cold and distant, far from active stirring by larger bodies. And as for life's origins, they found carbon and hydrogen and nitrogen as well--and even the simplest amino acid, glycine. "There's just a whole primordial soup of stuff," says McCaughrean.
+    
+    But while the mission has been long, it is far from complete. Rosetta has been collecting data for two years, and scientists have analyzed only a fraction of it. And they'll get more even as Accomazzo's team pilots the craft to its final resting place. "The mission for me is all the science data that was collected," says Accomazzo, "and it's a good feeling that scientists will use them for ages."
+    
+    But for now, pulling the plug on Rosetta is a difficult job. "There will be a piece of our lives that is gone," says Accomazzo. "After the landing we do have a party--otherwise it would be too depressing." And Accomazzo is far from alone in being emotional.
+    
+    Even with the distance of retirement, Schwehm compared the end of Rosetta's transmissions to a flatlining heart monitor. "We'll never have that closure with Rosetta like we did with Philae because there's nothing out there to take a picture," says McCaughrean. "I think we'll see a lot of people go off into the corner for a cry when it's over."
 
 ### Read Web Content in Your Terminal
 One use case for this script is to convert content from the web to a format that is suitable for reading in your terminal.  Here's a short shell pipeline to extract the content and feed the converted plain-text to your `$PAGER` of choice for easy reading:
-	
-	#!/bin/sh
-	path/to/reader/reader.py $1 -w 80 \                 # wrap lines after 80 characters
-	| jq -r '"# "+.title,"",.author,"",.content.text' \ # prepend title and author to text content
-	| $PAGER                                            # pipe to your favorite pager
+
+    #!/bin/sh
+    $HOME/Dropbox/Scripts/Python/reader/reader.py $1 -w 80 \            # wrap lines after 80 characters
+    | jq -r '["# ",.title?,"\n\n",.author?,"\n\n",.content.text]|add' \ # prepend title and author if available
+    | $PAGER                                                            # pipe to your favorite paber
