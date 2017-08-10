@@ -179,6 +179,10 @@ A plain-text conversion from the HTML is added in `.content.text`:
 One use case for this script is to convert content from the web to a format that is suitable for reading in your terminal.  Here's a short shell pipeline to extract the content and feed the converted plain-text to your `$PAGER` of choice for easy reading:
 
     #!/bin/sh
-    $HOME/Dropbox/Scripts/Python/reader/reader.py $1 -w 80 \            # wrap lines after 80 characters
-    | jq -r '["# ",.title?,"\n\n",.author?,"\n\n",.content.text]|add' \ # prepend title and author if available
-    | $PAGER                                                            # pipe to your favorite paber
+    $HOME/Dropbox/Scripts/Python/reader/reader.py $1 -w 80 \ # wrap at 80 characters
+    | jq -r '[
+        (if .title then "# "+.title else empty end),
+        (if .author then .author else empty end),
+        .content.text
+    ] | join("\n\n")' \                                      # prepend title/author if available
+    | $PAGER                                                 # pipe to pager of your choice
