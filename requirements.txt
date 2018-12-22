@@ -1,6 +1,6 @@
-certifi==2017.7.27.1
+certifi==2018.11.29
 chardet==3.0.4
-html2text==2016.9.19
-idna==2.5
-requests==2.18.3
-urllib3==1.22
+html2text==2018.1.9
+idna==2.8
+requests==2.21.0
+urllib3==1.24.1
