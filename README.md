@@ -1,6 +1,8 @@
 # reader
 Extract clean(er), readable text from web pages via [Mercury Web Parser API](https://mercury.postlight.com/web-parser/).
 
+FYI, the Mercury Web Parser API is going to be shut down April 15, 2019.  Postlight has [open sourced the parser](https://github.com/postlight/mercury-parser) under quite friendly licenses.  However, it's not so easy to take advantage of the parser when it is not a hosted API.  In some ways, this is nice, because if you run the parser locally, you don't have to run lots of traffic through Postlight's servers.  In other ways, it means I'd have to write Python bindings or a wrapper in order to make my use case feasible.  I'm looking for alternatives in my spare time, but haven't found anything ideal so far.  I'm aware of [Apache Tika](https://github.com/apache/tika), and its [Python port](http://github.com/chrismattmann/tika-python), but I'm not totally statisfied with that.  I am hoping that an open source project similar to the Brave browser's [SpeedReader](https://brave.com/speed-reader/) might exist, but for now, I'm sadly thinking this project may die along with the Mercury API.
+
 ## Usage
 
     ./reader.py -h
