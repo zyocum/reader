@@ -7,7 +7,6 @@ This script reads JSON input from the Mercury Web Parser
 to markdown and plain-text via html2text.
 """
 
-import os
 import sys
 import json
 import textwrap
@@ -88,7 +87,7 @@ def load(filename):
             return json.loads(sys.stdin.read())
         with open(filename, mode='r') as f:
             return json.load(f)
-    except JSONDecodeError:
+    except json.JSONDecodeError:
         print(f'failed to load JSON from file: {filename}', file=sys.stderr)
         sys.exit(1)
 
