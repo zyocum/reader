@@ -2,48 +2,102 @@
 
 """Get a cleaner version of a web page for reading purposes.
 
-This script uses the Mercury API to perform content extraction and html2text 
-for cleaning/conversion.
+This script reads JSON input from the Mercury Web Parser 
+(https://github.com/postlight/mercury-parser) and performs conversion of HTML 
+to markdown and plain-text via html2text.
 """
 
 import os
 import sys
-import requests
-import argparse
 import json
+import textwrap
 
+from datetime import datetime
 from html import unescape
 from html2text import HTML2Text
-from getpass import getpass
 
-MERCURY_API = 'https://mercury.postlight.com/parser'
+class Format():
+    """This is a decorator class for registering document format methods.
+    
+    You can register additional document formatter functions by decorating
+    them with @Format.
+    
+    A formatter should be a function that takes as input a response object
+    from the Mercury API.  It's output can be any string derived from that
+    input.
+    
+    By convention formatters should have a '_format' suffix in their function
+    name.  By this convention, if you have a formatter named 'json_format',
+    then you can call this with Format.formatter['json']().
+    """
+    formatter = {}
+    def __init__(self, f):
+        key, _ = f.__name__.rsplit('_', 1)
+        self.formatter.update({key: f})
+        self.format = f
+    
+    def __call__(self):
+        self.format()
 
-def handle(response):
-    """Convenience method to throw away bad responses"""
-    if response.status_code == 200: # success
-        return response.json()
-    else:
-        message = 'HTTP status {} ({}): {}'.format(
-            response.status_code,
-            response.reason,
-            response.url
-        )
-        print(message, file=sys.stderr)
+@Format
+def json_format(obj):
+    """Formatter that formats as JSON"""
+    return json.dumps(obj, ensure_ascii=False)
+
+@Format
+def md_format(obj):
+    """Formatter that formats as markdown"""
+    obj['date_published'] = datetime.strptime(
+        obj['date_published'],
+        "%Y-%m-%dT%H:%M:%S.%fZ"
+    )
+    content = '''
+    date: {date_published}  
+    author(s): {author}  
+    
+    # [{title}]({url})
+    '''
+    return '\n'.join((
+        textwrap.dedent(content.format(**obj)),
+        obj['content'].get('markdown', '')
+    ))
+
+@Format
+def txt_format(obj):
+    """Formatter that formats as plain-text"""
+    obj['date_published'] = datetime.strptime(
+        obj['date_published'],
+        "%Y-%m-%dT%H:%M:%S.%fZ"
+    )
+    content = '''
+    url: {url}
+    date: {date_published}
+    author(s): {author}
+    
+    {title}
+    '''
+    return '\n'.join((
+        textwrap.dedent(content.format(**obj)),
+        obj['content'].get('text', '')
+    ))
+
+def load(filename):
+    """Load Mercury Web Parser JSON results from file as a Python dict"""
+    try:
+        if filename in {"-", None}:
+            return json.loads(sys.stdin.read())
+        with open(filename, mode='r') as f:
+            return json.load(f)
+    except JSONDecodeError:
+        print(f'failed to load JSON from file: {filename}', file=sys.stderr)
         sys.exit(1)
 
-def main(url, api_key, body_width):
-    """Convert Mercury API HTML content to Markdown and plain-text
+def main(filename, body_width):
+    """Convert Mercury parse result dict to Markdown and plain-text
     
-    url: a URL whose content should be extracted and converted
-    api_key: Mercury API key (https://mercury.postlight.com/web-parser/)
+    result: a mercury-parser result (as a Python dict)
     """
-    response = handle(
-        requests.get(
-            MERCURY_API,
-            params={'url': url},
-            headers={'Content-Type': 'application/json', 'x-api-key': api_key}
-        )
-    )
+    result = load(filename)
     text = HTML2Text()
     text.body_width = body_width
     text.ignore_emphasis = True
@@ -51,26 +105,31 @@ def main(url, api_key, body_width):
     text.ignore_links = True
     markdown = HTML2Text()
     markdown.body_width = body_width
-    response['content'] = {
-        'html': response['content'],
-        'markdown': unescape(markdown.handle(response['content'])),
-        'text': unescape(text.handle(response['content']))
+    result['content'] = {
+        'html': result['content'],
+        'markdown': unescape(markdown.handle(result['content'])),
+        'text': unescape(text.handle(result['content']))
     }
-    print(json.dumps(response, ensure_ascii=False))
+    return result
 
 if __name__ == '__main__':
+    import argparse
     parser = argparse.ArgumentParser(
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
         description=__doc__
     )
     parser.add_argument(
-        'url',
-        help='a URL to process',
+        'filename',
+        help=(
+            'load Mercury Web Parser JSON result from file (use "-" '
+            'to read from stdin)'
+        )
     )
     parser.add_argument(
-        '-k', '--api-key',
-        default=None,
-        help='a Mercury API key'
+        '-f', '--format',
+        choices=list(Format.formatter),
+        default='json',
+        help='output format'
     )
     parser.add_argument(
         '-w', '--body-width',
@@ -79,9 +138,8 @@ if __name__ == '__main__':
         help='character offset at which to wrap lines for plain-text'
     )
     args = parser.parse_args()
-    api_key = (
-        args.api_key or
-        os.environ.get('MERCURY_API_KEY') or
-        getpass('Mercury API key:')
+    obj = main(
+        args.filename,
+        args.body_width,
     )
-    main(args.url, api_key, args.body_width)
+    print(Format.formatter[args.format](obj))
