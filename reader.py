@@ -38,6 +38,14 @@ class Format():
     def __call__(self):
         self.format()
 
+def format_date(obj):
+    date = obj.get('date_published')
+    if date is not None:        
+        obj['date_published'] = datetime.strptime(
+            obj['date_published'],
+            "%Y-%m-%dT%H:%M:%S.%fZ"
+        )
+
 @Format
 def json_format(obj):
     """Formatter that formats as JSON"""
@@ -46,10 +54,7 @@ def json_format(obj):
 @Format
 def md_format(obj):
     """Formatter that formats as markdown"""
-    obj['date_published'] = datetime.strptime(
-        obj['date_published'],
-        "%Y-%m-%dT%H:%M:%S.%fZ"
-    )
+    format_date(obj)
     content = '''
     date: {date_published}  
     author(s): {author}  
@@ -64,10 +69,7 @@ def md_format(obj):
 @Format
 def txt_format(obj):
     """Formatter that formats as plain-text"""
-    obj['date_published'] = datetime.strptime(
-        obj['date_published'],
-        "%Y-%m-%dT%H:%M:%S.%fZ"
-    )
+    format_date(obj)
     content = '''
     url: {url}
     date: {date_published}
