@@ -3,6 +3,6 @@ chardet==3.0.4
 html2text==2018.1.9
 idna==2.8
 Naked==0.1.31
-PyYAML==3.13
+PyYAML>=4.2b1
 requests==2.21.0
 urllib3==1.24.1
