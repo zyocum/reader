@@ -93,12 +93,11 @@ def load(filename):
         print(f'failed to load JSON from file: {filename}', file=sys.stderr)
         sys.exit(1)
 
-def main(filename, body_width):
+def main(result, body_width):
     """Convert Mercury parse result dict to Markdown and plain-text
     
     result: a mercury-parser result (as a Python dict)
     """
-    result = load(filename)
     text = HTML2Text()
     text.body_width = body_width
     text.ignore_emphasis = True
@@ -140,7 +139,7 @@ if __name__ == '__main__':
     )
     args = parser.parse_args()
     obj = main(
-        args.filename,
+        load(args.filename),
         args.body_width,
     )
     print(Format.formatter[args.format](obj))
