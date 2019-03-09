@@ -33,7 +33,7 @@ def mercury(url, mercury_cli_path):
     )
     if response.exitcode != 0:
         print('[ERROR] URL: {}'.format(url), file=sys.stderr)
-        print(response.stderr.decode('utf-8'), file=sys.stderr)
+        print('[ERROR]', response.stderr.decode('utf-8'), file=sys.stderr)
         sys.exit(response.exitcode)
     else:
         result = json.loads(response.stdout.decode('utf-8'))
