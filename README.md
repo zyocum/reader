@@ -2,7 +2,7 @@
 Extract clean(er), readable text from web pages via [Mercury Web Parser](https://github.com/postlight/mercury-parser).
 
 ## A note on the Mercury Web Parser
-The creators of the Mercury Web Parser initially offered it as a free service via a ReSTful API, but have since open sourced it.  The API will be shut down April 15, 2019.  To continue using the parser, install its command-line driver using [`yarn`](https://github.com/yarnpkg/yarn) or [`npm`](https://github.com/npm/cli) package managers:
+The creators of the Mercury Web Parser initially offered it as a free service via a ReSTful API, but have since open sourced it.  The API was shut down April 15, 2019.  To continue using the parser, install its command-line driver using [`yarn`](https://github.com/yarnpkg/yarn) or [`npm`](https://github.com/npm/cli) package managers:
 
 ```
 # Install Mercury globally
