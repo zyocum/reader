@@ -103,8 +103,10 @@ def main(result, body_width):
     text.ignore_emphasis = True
     text.ignore_images = True
     text.ignore_links = True
+    text.convert_charrefs = True
     markdown = HTML2Text()
     markdown.body_width = body_width
+    markdown.convert_charrefs = True
     result['content'] = {
         'html': result['content'],
         'markdown': unescape(markdown.handle(result['content'])),
