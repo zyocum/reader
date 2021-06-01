@@ -5,4 +5,4 @@ idna==2.8
 Naked==0.1.31
 PyYAML==5.4
 requests==2.21.0
-urllib3==1.25
+urllib3==1.26.5
