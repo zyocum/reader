@@ -67,7 +67,7 @@ if __name__ == '__main__':
     )
     parser.add_argument(
         '-p', '--mercury-path',
-        default='/usr/local/bin/mercury-parser',
+        default='/opt/homebrew/bin/mercury-parser',
         help='path to mercury-parser command line driver'
     )
     args = parser.parse_args()
