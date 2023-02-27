@@ -4,3 +4,4 @@ html2text==2020.1.16
 idna==3.3
 requests==2.27.1
 urllib3==1.26.9
+Naked
