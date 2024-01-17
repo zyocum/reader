@@ -1,16 +1,16 @@
 #!/usr/bin/env python3
 
-"""Python wrapper of the Mercury Parser command line
+"""Python wrapper of the postlight-parser command line
 
 This requires you've installed Node.js 
 (https://nodejs.org/en/) 
-and the mercury-parser 
-(https://github.com/postlight/mercury-parser):
+and the postlight-parser 
+(https://github.com/postlight/parser):
 
-# Install Mercury globally
-$ yarn global add @postlight/mercury-parser
+# Install postlight-parser globally
+$ yarn global add @postlight/parser
 # or
-$ npm -g install @postlight/mercury-parser
+$ npm -g install @postlight/parser
 
 """
 
@@ -21,22 +21,23 @@ from reader import HTML2Text, Format, unescape, main
 
 from Naked.toolshed.shell import muterun_js
 
-def mercury(url, mercury_cli_path):
-    """Wrap the Mercury Parser command line driver
+def postlight_parser(url, parser_cli_path):
+    """Wrap the postlight-parser command line driver
     
     url: URL string to parse
-    mercur_cli_path: path to mercury-parser command line driver
+    mercur_cli_path: path to postlight-parser command line driver
     """
     response = muterun_js(
-        mercury_cli_path,
-        url
+        parser_cli_path,
+        arguments=url
     )
     if response.exitcode != 0:
         print('[ERROR] URL: {}'.format(url), file=sys.stderr)
         print('[ERROR]', response.stderr.decode('utf-8'), file=sys.stderr)
         sys.exit(response.exitcode)
     else:
-        result = json.loads(response.stdout.decode('utf-8'))
+        raw = response.stdout.decode('utf-8')
+        result = json.loads(raw[raw.find('{'):])
         if 'error' in result:
             print('[ERROR] URL: {}'.format(url), file=sys.stderr)
             print('[ERROR]', result['messages'], file=sys.stderr)
@@ -66,13 +67,13 @@ if __name__ == '__main__':
         help='character offset at which to wrap lines for plain-text'
     )
     parser.add_argument(
-        '-p', '--mercury-path',
-        default='/opt/homebrew/bin/mercury-parser',
-        help='path to mercury-parser command line driver'
+        '-p', '--parser-path',
+        default='/opt/homebrew/bin/postlight-parser',
+        help='path to postlight-parser command line driver'
     )
     args = parser.parse_args()
     obj = main(
-        mercury(args.url, args.mercury_path),
+        postlight_parser(args.url, args.parser_path),
         args.body_width
     )
     print(Format.formatter[args.format](obj))

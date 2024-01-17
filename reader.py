@@ -2,8 +2,8 @@
 
 """Get a cleaner version of a web page for reading purposes.
 
-This script reads JSON input from the Mercury Web Parser 
-(https://github.com/postlight/mercury-parser) and performs conversion of HTML 
+This script reads JSON input from the Postlight Parser 
+(https://github.com/postlight/parser) and performs conversion of HTML 
 to markdown and plain-text via html2text.
 """
 
@@ -22,8 +22,8 @@ class Format():
     them with @Format.
     
     A formatter should be a function that takes as input a response object
-    from the Mercury API.  It's output can be any string derived from that
-    input.
+    from the postlight-parser API.  It's output can be any string derived 
+    from that input.
     
     By convention formatters should have a '_format' suffix in their function
     name.  By this convention, if you have a formatter named 'json_format',
@@ -83,7 +83,7 @@ def txt_format(obj):
     ))
 
 def load(filename):
-    """Load Mercury Web Parser JSON results from file as a Python dict"""
+    """Load parser JSON results from file as a Python dict"""
     try:
         if filename in {"-", None}:
             return json.loads(sys.stdin.read())
@@ -94,9 +94,10 @@ def load(filename):
         sys.exit(1)
 
 def main(result, body_width):
-    """Convert Mercury parse result dict to Markdown and plain-text
+    """Convert parse result dict to Markdown and plain-text
     
-    result: a mercury-parser result (as a Python dict)
+    result: dict (a postlight-parser result)
+    body_width: int (line hard-wrap length)
     """
     text = HTML2Text()
     text.body_width = body_width
@@ -123,7 +124,7 @@ if __name__ == '__main__':
     parser.add_argument(
         'filename',
         help=(
-            'load Mercury Web Parser JSON result from file (use "-" '
+            'load postlight-parser JSON result from file (use "-" '
             'to read from stdin)'
         )
     )
