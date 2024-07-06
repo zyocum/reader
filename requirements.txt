@@ -1,4 +1,4 @@
-certifi==2023.7.22
+certifi==2024.7.4
 charset-normalizer==2.0.12
 html2text==2020.1.16
 idna==3.3
