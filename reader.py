@@ -2,147 +2,335 @@
 
 """Get a cleaner version of a web page for reading purposes.
 
-This script reads JSON input from the Postlight Parser 
-(https://github.com/postlight/parser) and performs conversion of HTML 
-to markdown and plain-text via html2text.
+This script fetches a URL (or reads local HTML) and extracts the main
+content and metadata via trafilatura
+(https://trafilatura.readthedocs.io/), outputting the document as JSON,
+Markdown, plain-text, or HTML.
 """
 
-import sys
 import json
+import re
+import sys
 import textwrap
+from copy import deepcopy
+from typing import ClassVar, Protocol, TypedDict
 
-from datetime import datetime
-from html import unescape
-from html2text import HTML2Text
+from lxml import etree
+from lxml.etree import _Element  # pyright: ignore[reportPrivateUsage]
+from trafilatura import bare_extraction, fetch_url
 
-class Format():
+# these are the same (non-underscored) helpers trafilatura.extract()
+# dispatches to when serializing its extraction result; using them
+# directly lets us extract once and serialize three ways
+from trafilatura.htmlprocessing import build_html_output
+from trafilatura.utils import normalize_unicode
+from trafilatura.xml import xmltotxt
+
+
+class Content(TypedDict):
+    """The extracted main content, serialized three ways"""
+
+    html: str
+    markdown: str
+    text: str
+
+
+class ParseResult(TypedDict):
+    """Document metadata and content extracted by trafilatura"""
+
+    title: str | None
+    author: str | None
+    url: str | None
+    hostname: str | None
+    description: str | None
+    sitename: str | None
+    date: str | None
+    categories: list[str] | None
+    tags: list[str] | None
+    fingerprint: str | None
+    id: str | None
+    license: str | None
+    language: str | None
+    image: str | None
+    pagetype: str | None
+    filedate: str | None
+    content: Content
+    word_count: int
+
+
+class Formatter(Protocol):
+    """A named function that renders a ParseResult as output text"""
+
+    __name__: str
+
+    def __call__(self, obj: ParseResult, /) -> str: ...
+
+
+class Format:
     """This is a decorator class for registering document format methods.
-    
+
     You can register additional document formatter functions by decorating
     them with @Format.
-    
-    A formatter should be a function that takes as input a response object
-    from the postlight-parser API.  It's output can be any string derived 
-    from that input.
-    
+
+    A formatter should be a function that takes as input a parse result
+    dict.  It's output can be any string derived from that input.
+
     By convention formatters should have a '_format' suffix in their function
     name.  By this convention, if you have a formatter named 'json_format',
     then you can call this with Format.formatter['json']().
     """
-    formatter = {}
-    def __init__(self, f):
-        key, _ = f.__name__.rsplit('_', 1)
+
+    formatter: ClassVar[dict[str, Formatter]] = {}
+    format: Formatter
+
+    def __init__(self, f: Formatter) -> None:
+        key, _ = f.__name__.rsplit("_", 1)
         self.formatter.update({key: f})
         self.format = f
-    
-    def __call__(self):
-        self.format()
 
-def format_date(obj):
-    date = obj.get('date_published')
-    if date is not None:        
-        obj['date_published'] = datetime.strptime(
-            obj['date_published'],
-            "%Y-%m-%dT%H:%M:%S.%fZ"
-        )
+    def __call__(self, obj: ParseResult) -> str:
+        return self.format(obj)
+
 
 @Format
-def json_format(obj):
+def json_format(obj: ParseResult) -> str:
     """Formatter that formats as JSON"""
     return json.dumps(obj, ensure_ascii=False)
 
+
 @Format
-def md_format(obj):
+def html_format(obj: ParseResult) -> str:
+    """Formatter that outputs the extracted content as HTML"""
+    return obj["content"]["html"]
+
+
+@Format
+def md_format(obj: ParseResult) -> str:
     """Formatter that formats as markdown"""
-    format_date(obj)
-    content = '''
-    date: {date_published}  
-    author(s): {author}  
-    
-    # [{title}]({url})
-    '''
-    return '\n'.join((
-        textwrap.dedent(content.format(**obj)),
-        obj['content'].get('markdown', '')
-    ))
-
-@Format
-def txt_format(obj):
-    """Formatter that formats as plain-text"""
-    format_date(obj)
-    content = '''
-    url: {url}
-    date: {date_published}
+    heading = "# [{title}]({url})" if obj["url"] else "# {title}"
+    content = """
+    date: {date}
     author(s): {author}
-    
-    {title}
-    '''
-    return '\n'.join((
-        textwrap.dedent(content.format(**obj)),
-        obj['content'].get('text', '')
-    ))
 
-def load(filename):
-    """Load parser JSON results from file as a Python dict"""
-    try:
-        if filename in {"-", None}:
-            return json.loads(sys.stdin.read())
-        with open(filename, mode='r') as f:
-            return json.load(f)
-    except json.JSONDecodeError:
-        print(f'failed to load JSON from file: {filename}', file=sys.stderr)
-        sys.exit(1)
-
-def main(result, body_width):
-    """Convert parse result dict to Markdown and plain-text
-    
-    result: dict (a postlight-parser result)
-    body_width: int (line hard-wrap length)
     """
-    text = HTML2Text()
-    text.body_width = body_width
-    text.ignore_emphasis = True
-    text.ignore_images = True
-    text.ignore_links = True
-    text.convert_charrefs = True
-    markdown = HTML2Text()
-    markdown.body_width = body_width
-    markdown.convert_charrefs = True
-    result['content'] = {
-        'html': result['content'],
-        'markdown': unescape(markdown.handle(result['content'])),
-        'text': unescape(text.handle(result['content']))
-    }
-    return result
-
-if __name__ == '__main__':
-    import argparse
-    parser = argparse.ArgumentParser(
-        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
-        description=__doc__
-    )
-    parser.add_argument(
-        'filename',
-        help=(
-            'load postlight-parser JSON result from file (use "-" '
-            'to read from stdin)'
+    return "\n".join(
+        (
+            (textwrap.dedent(content) + heading + "\n").format(**obj),
+            obj["content"]["markdown"],
         )
     )
-    parser.add_argument(
-        '-f', '--format',
-        choices=list(Format.formatter),
-        default='json',
-        help='output format'
+
+
+@Format
+def txt_format(obj: ParseResult) -> str:
+    """Formatter that formats as plain-text"""
+    content = """
+    url: {url}
+    date: {date}
+    author(s): {author}
+
+    {title}
+    """
+    return "\n".join(
+        (
+            textwrap.dedent(content).format(**obj),
+            obj["content"]["text"],
+        )
     )
-    parser.add_argument(
-        '-w', '--body-width',
+
+
+def wrap(text: str, width: int | None, markdown: bool = False) -> str:
+    """Hard-wrap each line of text at width, preserving blank lines
+
+    In markdown mode, lines whose markup would break if split across
+    lines (headings, table rows, horizontal rules, and fenced code
+    blocks) are left intact.
+    """
+    if not width:
+        return text
+    lines: list[str] = []
+    in_fence = False
+    for line in text.split("\n"):
+        stripped = line.strip()
+        if markdown and stripped.startswith(("```", "~~~")):
+            in_fence = not in_fence
+            lines.append(line)
+        elif not stripped or (
+            markdown and (in_fence or stripped.startswith(("#", "|", "---")))
+        ):
+            lines.append(line)
+        else:
+            lines.append(textwrap.fill(line, width))
+    return "\n".join(lines)
+
+
+def load(source: str) -> tuple[str, str | None]:
+    """Load HTML from a URL, local file, or stdin
+
+    source: a URL (http/https), a file path, or '-' for stdin
+
+    Returns an (html, url) tuple; url is None for local sources.
+    """
+    if source.startswith(("http://", "https://")):
+        html = fetch_url(source)
+        if html is None:
+            print(f"[ERROR] URL: {source}", file=sys.stderr)
+            print("[ERROR] failed to fetch URL", file=sys.stderr)
+            sys.exit(1)
+        return html, source
+    if source == "-":
+        return sys.stdin.read(), None
+    with open(source, mode="r") as f:
+        return f.read(), None
+
+
+WHITESPACE = re.compile(r"\s+")
+
+
+def collapse_space(element: _Element) -> None:
+    """Collapse source-formatting whitespace in an element's text nodes
+
+    Code blocks are left untouched, since their whitespace is
+    significant.
+    """
+    code: set[_Element] = set()
+    for block in element.iter("code"):
+        code.update(block.iter())
+    for el in element.iter():
+        if el in code:
+            continue
+        if el.text:
+            el.text = WHITESPACE.sub(" ", el.text)
+        if el.tail:
+            el.tail = WHITESPACE.sub(" ", el.tail)
+
+
+def markdown_text(element: _Element) -> str:
+    """Serialize an extracted element as markdown"""
+    element = deepcopy(element)
+    collapse_space(element)
+    return xmltotxt(element, include_formatting=True)
+
+
+def plain_text(element: _Element) -> str:
+    """Serialize an extracted element as plain text, sans links/images"""
+    element = deepcopy(element)
+    # lxml-stubs doesn't cover these two helpers, hence the ignores
+    etree.strip_tags(element, "ref")  # pyright: ignore[reportAny]
+    etree.strip_elements(element, "graphic", with_tail=False)  # pyright: ignore[reportAny]
+    collapse_space(element)
+    text = xmltotxt(element, include_formatting=False)
+    return "\n".join(line.rstrip() for line in text.split("\n"))
+
+
+def main(source: str, body_width: int | None) -> ParseResult:
+    """Extract a web page's content and metadata as a dict
+
+    source: URL, HTML file path, or '-' (stdin) to fetch and parse
+    body_width: int (line hard-wrap length for markdown/plain-text)
+
+    The result dict contains trafilatura's document metadata plus the
+    extracted content as HTML ('content.html'), Markdown
+    ('content.markdown'), and plain-text ('content.text').
+    """
+    html, url = load(source)
+    doc = bare_extraction(
+        html,
+        url=url,
+        with_metadata=True,
+        include_formatting=True,
+        include_links=True,
+        include_images=True,
+    )
+    if doc is None or isinstance(doc, dict):
+        print(f"[ERROR] source: {source}", file=sys.stderr)
+        print("[ERROR] failed to extract content", file=sys.stderr)
+        sys.exit(1)
+    markdown = "\n".join(
+        (
+            markdown_text(doc.body),
+            markdown_text(doc.commentsbody),
+        )
+    ).strip()
+    text = "\n".join(
+        (
+            plain_text(doc.body),
+            plain_text(doc.commentsbody),
+        )
+    ).strip()
+    # build_html_output converts doc.body in place, so it must come last
+    content_html = build_html_output(doc)
+    return ParseResult(
+        title=doc.title,
+        author=doc.author,
+        url=doc.url,
+        hostname=doc.hostname,
+        description=doc.description,
+        sitename=doc.sitename,
+        date=doc.date,
+        categories=doc.categories,
+        tags=doc.tags,
+        fingerprint=doc.fingerprint,
+        id=doc.id,
+        license=doc.license,
+        language=doc.language,
+        image=doc.image,
+        pagetype=doc.pagetype,
+        filedate=doc.filedate,
+        content=Content(
+            html=normalize_unicode(content_html),
+            markdown=wrap(
+                normalize_unicode(markdown),
+                body_width,
+                markdown=True,
+            ),
+            text=wrap(
+                normalize_unicode(text),
+                body_width,
+            ),
+        ),
+        word_count=len(text.split()),
+    )
+
+
+if __name__ == "__main__":
+    import argparse
+
+    class Args(argparse.Namespace):
+        source: str = ""
+        format: str = "json"
+        body_width: int | None = None
+
+    parser = argparse.ArgumentParser(
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter, description=__doc__
+    )
+    _ = parser.add_argument(
+        "source",
+        help=(
+            "URL to fetch and parse, or path to a local HTML file "
+            '(use "-" to read HTML from stdin)'
+        ),
+    )
+    _ = parser.add_argument(
+        "-f",
+        "--format",
+        choices=list(Format.formatter),
+        default="json",
+        help="output format",
+    )
+    _ = parser.add_argument(
+        "-w",
+        "--body-width",
         type=int,
         default=None,
-        help='character offset at which to wrap lines for plain-text'
+        help=(
+            "character offset at which to hard-wrap lines of markdown "
+            "and plain-text content"
+        ),
     )
-    args = parser.parse_args()
+    args = parser.parse_args(namespace=Args())
     obj = main(
-        load(args.filename),
+        args.source,
         args.body_width,
     )
     print(Format.formatter[args.format](obj))

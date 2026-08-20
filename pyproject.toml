@@ -1,15 +1,27 @@
 [project]
 name = "reader"
 version = "0.1.0"
-description = "Add your description here"
+description = "Extract clean(er), readable text from web pages via trafilatura"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
-    "html2text>=2025.4.15",
-    "naked>=0.1.32",
+    "trafilatura>=2.2.0",
 ]
 
 [tool.pyright]
+include = [
+    "**/*.py",
+]
+exclude = [
+    ".venv",
+    ".git",
+    "**/__pycache__/**",
+]
 venvPath = "."
-venv = "venv"
+venv = ".venv"
 pythonVersion = "3.13"
+
+[dependency-groups]
+dev = [
+    "lxml-stubs>=0.5.1",
+]

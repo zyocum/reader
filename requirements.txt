@@ -1,8 +1,18 @@
-certifi==2025.6.15
-charset-normalizer==3.4.2
-html2text==2025.4.15
-idna==3.10
-naked==0.1.32
-pyyaml==6.0.2
-requests==2.32.4
-urllib3==2.5.0
+babel==2.18.0
+certifi==2026.7.22
+charset-normalizer==3.5.1
+courlan==1.4.0
+dateparser==1.4.2
+htmldate==1.10.0
+justext==3.0.2
+lxml==6.1.2
+lxml-html-clean==0.4.5
+python-dateutil==2.9.0.post0
+pytz==2026.3.post1
+regex==2026.7.19
+six==1.17.0
+tld==0.13.2
+trafilatura==2.2.0
+tzdata==2026.3 ; sys_platform == 'win32'
+tzlocal==5.4.4
+urllib3==2.7.0
