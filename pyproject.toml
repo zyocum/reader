@@ -24,5 +24,7 @@ pythonVersion = "3.13"
 
 [dependency-groups]
 dev = [
+    "basedpyright>=1.39.10",
     "lxml-stubs>=0.5.1",
+    "ruff>=0.16.3",
 ]
