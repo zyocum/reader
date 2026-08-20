@@ -1,6 +1,6 @@
 [project]
 name = "reader"
-version = "0.1.0"
+version = "1.0.0"
 description = "Extract clean(er), readable text from web pages via trafilatura"
 readme = "README.md"
 requires-python = ">=3.13"
