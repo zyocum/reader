@@ -1,0 +1,23 @@
+version: 2
+
+updates:
+  - package-ecosystem: "uv"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+    # combine all version bumps into a single monthly PR
+    groups:
+      all-version-updates:
+        applies-to: version-updates
+        patterns:
+          - "*"
+      # batch any security bumps that arrive together into one PR
+      all-security-updates:
+        applies-to: security-updates
+        patterns:
+          - "*"
+    open-pull-requests-limit: 2
+    commit-message:
+      prefix: "chore(deps)"
+    labels:
+      - "dependencies"
