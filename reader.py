@@ -13,11 +13,12 @@ import re
 import sys
 import textwrap
 from copy import deepcopy
-from typing import ClassVar, Protocol, TypedDict
+from http.client import responses
+from typing import ClassVar, NoReturn, Protocol, TypedDict
 
 from lxml import etree
 from lxml.etree import _Element  # pyright: ignore[reportPrivateUsage]
-from trafilatura import bare_extraction, fetch_url
+from trafilatura import bare_extraction, fetch_response
 
 # these are the same (non-underscored) helpers trafilatura.extract()
 # dispatches to when serializing its extraction result; using them
@@ -164,6 +165,12 @@ def wrap(text: str, width: int | None, markdown: bool = False) -> str:
     return "\n".join(lines)
 
 
+def fail(error: str, source: str) -> NoReturn:
+    """Print a labeled error for source to stderr and exit"""
+    print(f"[{error}] {source}", file=sys.stderr)
+    sys.exit(1)
+
+
 def load(source: str) -> tuple[str, str | None]:
     """Load HTML from a URL, local file, or stdin
 
@@ -172,16 +179,22 @@ def load(source: str) -> tuple[str, str | None]:
     Returns an (html, url) tuple; url is None for local sources.
     """
     if source.startswith(("http://", "https://")):
-        html = fetch_url(source)
-        if html is None:
-            print(f"[ERROR] URL: {source}", file=sys.stderr)
-            print("[ERROR] failed to fetch URL", file=sys.stderr)
-            sys.exit(1)
-        return html, source
+        response = fetch_response(source, decode=True)
+        if response is None:
+            fail("FETCH ERROR - No response", source)
+        if not 200 <= response.status < 300:
+            reason = responses.get(response.status, "Unknown")
+            fail(f"HTTP ERROR {response.status} - {reason}", source)
+        if not response.html:
+            fail("FETCH ERROR - empty response", source)
+        return response.html, source
     if source == "-":
         return sys.stdin.read(), None
-    with open(source, mode="r") as f:
-        return f.read(), None
+    try:
+        with open(source, mode="r") as f:
+            return f.read(), None
+    except OSError as err:
+        fail(f"FILE ERROR - {err.strerror}", source)
 
 
 WHITESPACE = re.compile(r"\s+")
@@ -243,9 +256,7 @@ def main(source: str, body_width: int | None) -> ParseResult:
         include_images=True,
     )
     if doc is None or isinstance(doc, dict):
-        print(f"[ERROR] source: {source}", file=sys.stderr)
-        print("[ERROR] failed to extract content", file=sys.stderr)
-        sys.exit(1)
+        fail("PARSE ERROR - Failed to extract content", source)
     markdown = "\n".join(
         (
             markdown_text(doc.body),
