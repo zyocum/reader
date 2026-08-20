@@ -43,7 +43,9 @@ options:
                         content (default: None)
 ```
 
-When wrapping markdown, lines whose markup would break if split across lines (headings, table rows, horizontal rules, and fenced code blocks) are left intact.
+When wrapping markdown, lines whose markup would break if split across lines (headings, table rows, horizontal rules, and fenced code blocks) are left intact, and long tokens such as URLs are never split.
+
+Layout tables (common on older, table-based sites) are unwrapped into ordinary paragraphs so their contents read naturally, while genuine data tables are preserved; decorative tables with no text (image/spacer scaffolding) are dropped.
 
 The source can be a URL (fetched by trafilatura), a local HTML file, or `-` to read HTML from stdin — so you can also feed it pages saved locally or fetched by other tools (`curl`, a headless browser, etc.).
 
@@ -93,33 +95,42 @@ As a convenience, the `-f/--format` option can output the whole document as Mark
 
 ```
 (reader) $ ./reader.py https://www.paulgraham.com/greatwork.html --format=md
-
-date: 2023-01-01
-author(s): None
+---
+title: "How to Do Great Work"
+url: "https://www.paulgraham.com/greatwork.html"
+sitename: "paulgraham.com"
+date: "2023-01-01"
+words: 11874
+---
 
 # [How to Do Great Work](https://www.paulgraham.com/greatwork.html)
 
-July 2023 If you collected lists of techniques for doing great work in a lot
-of different fields, what would the intersection look like? I decided to find
+July 2023
+
+If you collected lists of techniques for doing great work in a lot of
+different fields, what would the intersection look like? I decided to find
 out by making it.
 ...
 ```
+
+The front matter includes the human-relevant metadata fields that are present (empty fields are omitted), quoted as YAML-safe scalars.
 
 ### Plain-text
 Similarly, the whole document can be formatted as plain-text:
 
 ```
 (reader) $ ./reader.py https://www.paulgraham.com/greatwork.html --format=txt -w 80
-
+title: How to Do Great Work
 url: https://www.paulgraham.com/greatwork.html
+sitename: paulgraham.com
 date: 2023-01-01
-author(s): None
+words: 11874
 
-How to Do Great Work
+July 2023
 
-July 2023 If you collected lists of techniques for doing great work in a lot
-of different fields, what would the intersection look like? I decided to find
-out by making it.
+If you collected lists of techniques for doing great work in a lot of different
+fields, what would the intersection look like? I decided to find out by making
+it.
 ...
 ```
 

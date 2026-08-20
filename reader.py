@@ -105,39 +105,51 @@ def html_format(obj: ParseResult) -> str:
     return obj["content"]["html"]
 
 
+def metadata(obj: ParseResult) -> dict[str, str | int]:
+    """The human-relevant, non-empty metadata fields of a parse result"""
+    fields: dict[str, str | int | None] = {
+        "title": obj["title"],
+        "author": obj["author"],
+        "url": obj["url"],
+        "sitename": obj["sitename"],
+        "date": obj["date"],
+        "description": obj["description"],
+        "categories": ", ".join(obj["categories"] or []),
+        "tags": ", ".join(obj["tags"] or []),
+        "words": obj["word_count"],
+    }
+    return {key: value for key, value in fields.items() if value}
+
+
 @Format
 def md_format(obj: ParseResult) -> str:
-    """Formatter that formats as markdown"""
-    heading = "# [{title}]({url})" if obj["url"] else "# {title}"
-    content = """
-    date: {date}
-    author(s): {author}
-
-    """
-    return "\n".join(
+    """Formatter that formats as markdown with YAML front matter"""
+    front_matter = "\n".join(
         (
-            (textwrap.dedent(content) + heading + "\n").format(**obj),
-            obj["content"]["markdown"],
+            "---",
+            # JSON scalars are valid YAML scalars, so this quoting is safe
+            *(
+                f"{key}: {json.dumps(value, ensure_ascii=False)}"
+                for key, value in metadata(obj).items()
+            ),
+            "---",
         )
     )
+    body = obj["content"]["markdown"]
+    # supply a title heading unless the content already leads with one
+    if obj["title"] and not body.lstrip().startswith("# "):
+        title = (
+            f"# [{obj['title']}]({obj['url']})" if obj["url"] else f"# {obj['title']}"
+        )
+        body = f"{title}\n\n{body}"
+    return f"{front_matter}\n\n{body}"
 
 
 @Format
 def txt_format(obj: ParseResult) -> str:
-    """Formatter that formats as plain-text"""
-    content = """
-    url: {url}
-    date: {date}
-    author(s): {author}
-
-    {title}
-    """
-    return "\n".join(
-        (
-            textwrap.dedent(content).format(**obj),
-            obj["content"]["text"],
-        )
-    )
+    """Formatter that formats as plain-text with a metadata header"""
+    header = "\n".join(f"{key}: {value}" for key, value in metadata(obj).items())
+    return f"{header}\n\n{obj['content']['text']}"
 
 
 def wrap(text: str, width: int | None, markdown: bool = False) -> str:
@@ -161,7 +173,15 @@ def wrap(text: str, width: int | None, markdown: bool = False) -> str:
         ):
             lines.append(line)
         else:
-            lines.append(textwrap.fill(line, width))
+            lines.append(
+                textwrap.fill(
+                    line,
+                    width,
+                    # never split within long tokens, e.g. URLs
+                    break_long_words=False,
+                    break_on_hyphens=False,
+                )
+            )
     return "\n".join(lines)
 
 
@@ -199,6 +219,77 @@ def load(source: str) -> tuple[str, str | None]:
 
 WHITESPACE = re.compile(r"\s+")
 
+BLOCK_TAGS = {"p", "head", "list", "quote", "code", "table", "graphic"}
+
+# lines that should stay adjacent to their neighbors (list items, table rows)
+TIGHT = re.compile(r"- |\* |\||\d+\. ")
+
+
+def splice(element: _Element) -> None:
+    """Replace an element with its children, in place"""
+    parent = element.getparent()
+    if parent is None:
+        return
+    index = parent.index(element)
+    children = list(element)
+    if element.tail and children:
+        last = children[-1]
+        last.tail = f"{last.tail or ''}{element.tail}"
+    for offset, child in enumerate(children):
+        parent.insert(index + offset, child)
+    parent.remove(element)
+
+
+def is_layout(table: _Element) -> bool:
+    """Is this (extracted) table element a layout table?
+
+    Tables that have at most one cell or that nest block-level content
+    inside a cell exist to arrange content rather than to relate it,
+    and their contents read better as ordinary blocks (markdown and
+    plain-text table cells can't hold block content, so it would
+    otherwise be flattened onto one line).
+
+    Note that this is necessarily heuristic: the HTML standard leaves
+    layout-table detection to user-agent heuristics, and unwrapping
+    ("linearizing") them is exactly what screen readers and browser
+    reader modes (e.g. Readability.js's _markDataTables) do.  Operating
+    on trafilatura's normalized post-extraction tree keeps the rules
+    here far simpler than theirs.
+    """
+    cells = table.findall(".//cell")
+    if len(cells) <= 1:
+        return True
+    return any(child.tag in BLOCK_TAGS for cell in cells for child in cell)
+
+
+def unwrap_layout_tables(body: _Element) -> None:
+    """Splice layout tables' contents up into their parents, in place
+
+    Tables with no text at all (decorative image/spacer scaffolding)
+    are dropped entirely; cells with inline-only content become
+    paragraphs; data tables are left alone.
+    """
+    # reversed => document order guarantees inner tables come last, so
+    # nested tables are unwrapped before their enclosing table
+    for table in reversed(list(body.iter("table"))):
+        if not any(text.strip() for text in table.itertext()):
+            parent = table.getparent()
+            if parent is not None:
+                parent.remove(table)
+            continue
+        if not is_layout(table):
+            continue
+        for cell in list(table.iter("cell")):
+            if any(child.tag in BLOCK_TAGS for child in cell) or not (
+                cell.text and cell.text.strip()
+            ):
+                splice(cell)
+            else:
+                cell.tag = "p"
+        for row in list(table.iter("row")):
+            splice(row)
+        splice(table)
+
 
 def collapse_space(element: _Element) -> None:
     """Collapse source-formatting whitespace in an element's text nodes
@@ -225,6 +316,26 @@ def markdown_text(element: _Element) -> str:
     return xmltotxt(element, include_formatting=True)
 
 
+def space_blocks(text: str) -> str:
+    """Separate single-line blocks with blank lines for readability
+
+    Runs of list items and table rows are kept adjacent.
+    """
+    spaced: list[str] = []
+    previous = ""
+    for line in text.split("\n"):
+        if (
+            spaced
+            and previous
+            and line
+            and not (TIGHT.match(line) and TIGHT.match(previous))
+        ):
+            spaced.append("")
+        spaced.append(line)
+        previous = line
+    return "\n".join(spaced)
+
+
 def plain_text(element: _Element) -> str:
     """Serialize an extracted element as plain text, sans links/images"""
     element = deepcopy(element)
@@ -233,7 +344,7 @@ def plain_text(element: _Element) -> str:
     etree.strip_elements(element, "graphic", with_tail=False)  # pyright: ignore[reportAny]
     collapse_space(element)
     text = xmltotxt(element, include_formatting=False)
-    return "\n".join(line.rstrip() for line in text.split("\n"))
+    return space_blocks("\n".join(line.rstrip() for line in text.split("\n")))
 
 
 def main(source: str, body_width: int | None) -> ParseResult:
@@ -256,7 +367,9 @@ def main(source: str, body_width: int | None) -> ParseResult:
         include_images=True,
     )
     if doc is None or isinstance(doc, dict):
-        fail("PARSE ERROR - Failed to extract content", source)
+        fail("PARSE ERROR - failed to extract content", source)
+    unwrap_layout_tables(doc.body)
+    unwrap_layout_tables(doc.commentsbody)
     markdown = "\n".join(
         (
             markdown_text(doc.body),
