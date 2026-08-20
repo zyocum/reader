@@ -7,7 +7,6 @@ htmldate==1.10.0
 justext==3.0.2
 lxml==6.1.2
 lxml-html-clean==0.4.5
-lxml-stubs==0.5.1
 python-dateutil==2.9.0.post0
 pytz==2026.3.post1
 regex==2026.7.19
