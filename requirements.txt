@@ -12,6 +12,7 @@ python-dateutil==2.9.0.post0
 pytz==2026.3.post1
 regex==2026.7.19
 six==1.17.0
+tabulate==0.10.0
 tld==0.13.2
 trafilatura==2.2.0
 tzdata==2026.3 ; sys_platform == 'win32'

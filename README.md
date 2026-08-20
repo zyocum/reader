@@ -24,7 +24,7 @@ $ source .venv/bin/activate
 
 ```
 (reader) $ ./reader.py -h
-usage: reader.py [-h] [-f {json,html,md,txt}] [-w BODY_WIDTH] source
+usage: reader.py [-h] [-f {json,html,md,txt}] [-w BODY_WIDTH] [-t FORMAT] source
 
 Get a cleaner version of a web page for reading purposes. This script fetches a URL (or reads
 local HTML) and extracts the main content and metadata via [trafilatura](https://trafilatura.readthedocs.io/), outputting the document as JSON, Markdown, plain-text, or
@@ -41,11 +41,22 @@ options:
   -w BODY_WIDTH, --body-width BODY_WIDTH
                         character offset at which to hard-wrap lines of markdown and plain-text
                         content (default: None)
+  -t FORMAT, --table-format FORMAT
+                        tabulate format for data tables in plain-text content (default: simple)
 ```
 
 When wrapping markdown, lines whose markup would break if split across lines (headings, table rows, horizontal rules, and fenced code blocks) are left intact, and long tokens such as URLs are never split.
 
-Layout tables (common on older, table-based sites) are unwrapped into ordinary paragraphs so their contents read naturally, while genuine data tables are preserved; decorative tables with no text (image/spacer scaffolding) are dropped.
+Layout tables (common on older, table-based sites) are unwrapped into ordinary paragraphs so their contents read naturally, while genuine data tables are preserved; decorative tables with no text (image/spacer scaffolding) are dropped. In plain-text output, data tables are rendered as aligned text via [tabulate](https://github.com/astanin/python-tabulate), in any format tabulate supports (`-t/--table-format`, default `simple`):
+
+```
+City           Population
+-----------  ------------
+Springfield        30,720
+Shelbyville        12,654
+```
+
+Rendered tables are never disturbed by `-w` line-wrapping, regardless of the chosen table format.
 
 The source can be a URL (fetched by trafilatura), a local HTML file, or `-` to read HTML from stdin — so you can also feed it pages saved locally or fetched by other tools (`curl`, a headless browser, etc.).
 

@@ -17,7 +17,8 @@ from http.client import responses
 from typing import ClassVar, NoReturn, Protocol, TypedDict
 
 from lxml import etree
-from lxml.etree import _Element  # pyright: ignore[reportPrivateUsage]
+from lxml.etree import Element, _Element  # pyright: ignore[reportPrivateUsage]
+from tabulate import tabulate, tabulate_formats
 from trafilatura import bare_extraction, fetch_response
 
 # these are the same (non-underscored) helpers trafilatura.extract()
@@ -221,8 +222,12 @@ WHITESPACE = re.compile(r"\s+")
 
 BLOCK_TAGS = {"p", "head", "list", "quote", "code", "table", "graphic"}
 
-# lines that should stay adjacent to their neighbors (list items, table rows)
-TIGHT = re.compile(r"- |\* |\||\d+\. ")
+# lines that should stay adjacent to their neighbors (list items)
+TIGHT = re.compile(r"- |\* |\d+\. ")
+
+# object replacement character: placeholder for rendered tables so that
+# line-based post-processing can't disturb their layout
+OBJ = "\ufffc"
 
 
 def splice(element: _Element) -> None:
@@ -309,6 +314,27 @@ def collapse_space(element: _Element) -> None:
             el.tail = WHITESPACE.sub(" ", el.tail)
 
 
+def text_table(table: _Element, table_format: str) -> str:
+    """Render a (data) table element as aligned plain-text
+
+    table_format: any tabulate format name (tabulate.tabulate_formats)
+    """
+    headers: list[str] = []
+    rows: list[list[str]] = []
+    for row in table.iter("row"):
+        cells = list(row.iter("cell"))
+        texts = ["".join(map(str, cell.itertext())).strip() for cell in cells]
+        if (
+            not headers
+            and not rows
+            and any(cell.get("role") == "head" for cell in cells)
+        ):
+            headers = texts
+        else:
+            rows.append(texts)
+    return tabulate(rows, headers=headers, tablefmt=table_format)
+
+
 def markdown_text(element: _Element) -> str:
     """Serialize an extracted element as markdown"""
     element = deepcopy(element)
@@ -336,22 +362,48 @@ def space_blocks(text: str) -> str:
     return "\n".join(spaced)
 
 
-def plain_text(element: _Element) -> str:
-    """Serialize an extracted element as plain text, sans links/images"""
+def plain_text(element: _Element, table_format: str, tables: list[str]) -> str:
+    """Serialize an extracted element as plain text, sans links/images
+
+    Data tables are rendered with tabulate (in table_format) and
+    appended to tables; each is represented in the returned text by a
+    placeholder token so later line-based processing (blank-line
+    separation, wrapping) can't disturb its layout.  Swap them back in
+    with restore_tables().
+    """
     element = deepcopy(element)
     # lxml-stubs doesn't cover these two helpers, hence the ignores
     etree.strip_tags(element, "ref")  # pyright: ignore[reportAny]
     etree.strip_elements(element, "graphic", with_tail=False)  # pyright: ignore[reportAny]
     collapse_space(element)
+    for table in list(element.iter("table")):
+        parent = table.getparent()
+        if parent is None:
+            continue
+        placeholder = Element("p")
+        placeholder.text = f"{OBJ}{len(tables)}{OBJ}"
+        placeholder.tail = table.tail
+        tables.append(text_table(table, table_format))
+        parent.replace(table, placeholder)
     text = xmltotxt(element, include_formatting=False)
     return space_blocks("\n".join(line.rstrip() for line in text.split("\n")))
 
 
-def main(source: str, body_width: int | None) -> ParseResult:
+def restore_tables(text: str, tables: list[str]) -> str:
+    """Swap rendered tables back in for their placeholder tokens"""
+    for index, table in enumerate(tables):
+        text = text.replace(f"{OBJ}{index}{OBJ}", table)
+    return text
+
+
+def main(
+    source: str, body_width: int | None, table_format: str = "simple"
+) -> ParseResult:
     """Extract a web page's content and metadata as a dict
 
     source: URL, HTML file path, or '-' (stdin) to fetch and parse
     body_width: int (line hard-wrap length for markdown/plain-text)
+    table_format: tabulate format name for plain-text data tables
 
     The result dict contains trafilatura's document metadata plus the
     extracted content as HTML ('content.html'), Markdown
@@ -376,12 +428,15 @@ def main(source: str, body_width: int | None) -> ParseResult:
             markdown_text(doc.commentsbody),
         )
     ).strip()
-    text = "\n".join(
-        (
-            plain_text(doc.body),
-            plain_text(doc.commentsbody),
-        )
-    ).strip()
+    tables: list[str] = []
+    text = normalize_unicode(
+        "\n".join(
+            (
+                plain_text(doc.body, table_format, tables),
+                plain_text(doc.commentsbody, table_format, tables),
+            )
+        ).strip()
+    )
     # build_html_output converts doc.body in place, so it must come last
     content_html = build_html_output(doc)
     return ParseResult(
@@ -408,12 +463,12 @@ def main(source: str, body_width: int | None) -> ParseResult:
                 body_width,
                 markdown=True,
             ),
-            text=wrap(
-                normalize_unicode(text),
-                body_width,
+            text=restore_tables(
+                wrap(text, body_width),
+                tables,
             ),
         ),
-        word_count=len(text.split()),
+        word_count=len(restore_tables(text, tables).split()),
     )
 
 
@@ -424,6 +479,7 @@ if __name__ == "__main__":
         source: str = ""
         format: str = "json"
         body_width: int | None = None
+        table_format: str = "simple"
 
     parser = argparse.ArgumentParser(
         formatter_class=argparse.ArgumentDefaultsHelpFormatter, description=__doc__
@@ -452,9 +508,21 @@ if __name__ == "__main__":
             "and plain-text content"
         ),
     )
+    _ = parser.add_argument(
+        "-t",
+        "--table-format",
+        choices=tabulate_formats,
+        default="simple",
+        metavar="FORMAT",
+        help=(
+            "tabulate format for data tables in plain-text content "
+            f"(one of: {', '.join(tabulate_formats)})"
+        ),
+    )
     args = parser.parse_args(namespace=Args())
     obj = main(
         args.source,
         args.body_width,
+        args.table_format,
     )
     print(Format.formatter[args.format](obj))
