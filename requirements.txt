@@ -16,4 +16,4 @@ tld==0.13.2
 trafilatura==2.2.0
 tzdata==2026.3 ; sys_platform == 'win32'
 tzlocal==5.4.4
-urllib3==2.7.0
+urllib3==2.8.0
