@@ -13,7 +13,7 @@ dependencies = [
 reader = "reader:cli"
 
 [build-system]
-requires = ["hatchling>=1.28.0"]
+requires = ["hatchling>=1.32.4"]
 build-backend = "hatchling.build"
 
 # reader is a single top-level module, not a package directory, so the
@@ -43,7 +43,7 @@ pythonVersion = "3.14"
 
 [dependency-groups]
 dev = [
-    "basedpyright>=1.39.10",
+    "basedpyright>=1.40.1",
     "lxml-stubs>=0.5.1",
-    "ruff>=0.16.5",
+    "ruff>=0.16.9",
 ]
